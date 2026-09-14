@@ -14,7 +14,7 @@ export default function NotConnectedScreen({ appUrl }) {
         <h1 className="text-xl font-bold tracking-tight text-[var(--text)]">ИзиЧат</h1>
         <p className="mt-3 text-sm leading-relaxed text-[var(--text-secondary)]">
           Подключите Telegram к своему аккаунту ИзиЧат в настройках личного кабинета — тогда здесь
-          появятся ваши быстрые действия.
+          откроется ваш профиль и баланс.
         </p>
 
         <div className="mt-6 space-y-3">
