@@ -10,14 +10,23 @@
   --font-mono: "SF Mono", "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
 }
 
-/* Monochrome design tokens.
-   The dashboard's `--cc-*` tokens carry no hue, so they are reused verbatim
-   (renamed without the prefix). The only additions are `--primary-bg` /
-   `--primary-text`, standing in for the dashboard's violet button fill: this
-   app is strictly black-and-white, so the primary action is white-on-ink in
-   light mode and ink-on-white in dark mode. No accent hue exists anywhere in
-   this stylesheet. */
+/* Design tokens, shared 1:1 with the web dashboard.
+   The dashboard's neutral `--cc-*` tokens are reused verbatim (renamed without
+   the prefix) and DO flip between light/dark, so they stay per-theme below.
+   The violet accent does not: `--accent` is the dashboard's `--color-violet`
+   (#6c5ce7), `--accent-dark` its `--color-violet-dark` (#5643d9, the primary
+   button's hover fill — matching the dashboard's `hover:bg-violet-dark`), and
+   `--primary-bg` / `--primary-text` are the primary button's resting fill
+   (violet on white, matching the dashboard's `bg-violet text-white`). Violet
+   reads fine on both surfaces and the dashboard never flips it either, so
+   these four are declared ONCE, unconditionally, rather than repeated
+   identically in all three theme blocks below. */
 :root {
+  --accent: #6c5ce7;
+  --accent-dark: #5643d9;
+  --primary-bg: #6c5ce7;
+  --primary-text: #ffffff;
+
   --bg: #ffffff;
   --surface: #ffffff;
   --surface-2: #f4f4f5;
@@ -26,8 +35,6 @@
   --text-secondary: #71717a;
   --input-bg: #f4f4f5;
   --hover: rgba(0, 0, 0, 0.04);
-  --primary-bg: #131316;
-  --primary-text: #ffffff;
 }
 
 .dark,
@@ -40,8 +47,6 @@
   --text-secondary: #71717a;
   --input-bg: #141414;
   --hover: rgba(255, 255, 255, 0.06);
-  --primary-bg: #f5f5f5;
-  --primary-text: #131316;
 }
 
 /* Telegram's WebView is the only real runtime and the class above is applied
@@ -57,8 +62,6 @@
     --text-secondary: #71717a;
     --input-bg: #141414;
     --hover: rgba(255, 255, 255, 0.06);
-    --primary-bg: #f5f5f5;
-    --primary-text: #131316;
   }
 }
 

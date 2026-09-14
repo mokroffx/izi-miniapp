@@ -1,12 +1,14 @@
 // Bottom tab bar. Rendered ONLY when the account is connected — the
 // not-connected screen has no navigation at all.
 //
-// Icons are inline strokes rather than an icon package: this app must stay
-// strictly monochrome and the bundle small.
+// Icons are inline strokes rather than an icon package, to keep the bundle
+// small. They inherit `currentColor`, so the active tab's violet applies to the
+// icon and its label together — the dashboard tints its selected tab violet the
+// same way. The bar itself stays neutral (`--surface` on a `--border` top rule);
+// only the selection is colored.
 
 const TABS = [
   { id: 'home', label: 'Главная', icon: HomeIcon },
-  { id: 'actions', label: 'Быстрые действия', icon: BoltIcon },
   { id: 'profile', label: 'Профиль', icon: UserIcon },
 ];
 
@@ -24,7 +26,7 @@ export default function BottomNav({ active, onChange }) {
               onClick={() => onChange(tab.id)}
               aria-current={isActive ? 'page' : undefined}
               className={`flex flex-1 flex-col items-center gap-1 px-2 py-2.5 text-[10px] font-semibold transition-colors ${
-                isActive ? 'text-[var(--text)]' : 'text-[var(--text-secondary)]'
+                isActive ? 'text-[var(--accent)]' : 'text-[var(--text-secondary)]'
               }`}
             >
               <Icon />
@@ -52,24 +54,6 @@ function HomeIcon() {
     >
       <path d="M3 10.5 12 3l9 7.5" />
       <path d="M5 9.8V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.8" />
-    </svg>
-  );
-}
-
-function BoltIcon() {
-  return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" />
     </svg>
   );
 }

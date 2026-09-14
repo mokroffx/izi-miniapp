@@ -1,11 +1,12 @@
-// Profile: plan + balance, subscription management, account info, and a light
-// 30-day usage list.
+// Profile: plan + balance, subscription management, account info, and the
+// 30-day usage block (daily bar chart + the most recent tasks underneath).
 import { useEffect, useState } from 'react';
 import BalanceGauge from '@/components/BalanceGauge';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
 import ExternalLinkButton from '@/components/ExternalLinkButton';
 import UpgradeCard from '@/components/UpgradeCard';
+import UsageChart from '@/components/UsageChart';
 import { cancelSubscription, friendlyError, getUsage } from '@/lib/api';
 
 function formatDate(value) {
@@ -160,23 +161,30 @@ export default function ProfileScreen({ me, config, skills, onRefresh }) {
         </ExternalLinkButton>
       </Card>
 
-      {history.length > 0 && (
+      {usage && (
         <Card>
-          <h2 className="text-base font-bold text-[var(--text)]">Последние задачи</h2>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">За последние 30 дней</p>
-          <ul className="mt-3 divide-y divide-[var(--border)]">
-            {history.map((row, i) => (
-              <li
-                key={`${row.date}-${row.skill}-${i}`}
-                className="flex items-center justify-between gap-3 py-2.5 text-sm"
-              >
-                <span className="truncate text-[var(--text)]">{skillLabel(row.skill)}</span>
-                <span className="shrink-0 text-xs text-[var(--text-secondary)]">
-                  {formatDate(row.date) ?? ''}
-                </span>
-              </li>
-            ))}
-          </ul>
+          <h2 className="text-base font-bold text-[var(--text)]">Использование</h2>
+          <p className="mt-1 mb-4 text-sm text-[var(--text-secondary)]">За последние 14 дней</p>
+          <UsageChart dailyHistory={usage?.dailyHistory} />
+
+          {history.length > 0 && (
+            <>
+              <h3 className="mt-5 text-sm font-bold text-[var(--text)]">Последние задачи</h3>
+              <ul className="mt-1 divide-y divide-[var(--border)]">
+                {history.map((row, i) => (
+                  <li
+                    key={`${row.date}-${row.skill}-${i}`}
+                    className="flex items-center justify-between gap-3 py-2.5 text-sm"
+                  >
+                    <span className="truncate text-[var(--text)]">{skillLabel(row.skill)}</span>
+                    <span className="shrink-0 text-xs text-[var(--text-secondary)]">
+                      {formatDate(row.date) ?? ''}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </Card>
       )}
     </div>

@@ -1,5 +1,5 @@
 // App shell: one bootstrap fetch (config + me + skills), then either the
-// not-connected screen or the three-tab layout. Tabs are local state rather
+// not-connected screen or the two-tab layout. Tabs are local state rather
 // than a router — the Mini App has no URLs to speak of and Telegram owns the
 // back gesture.
 import { useCallback, useEffect, useState } from 'react';
@@ -7,7 +7,6 @@ import BottomNav from '@/components/BottomNav';
 import HomeScreen from '@/screens/HomeScreen';
 import NotConnectedScreen from '@/screens/NotConnectedScreen';
 import ProfileScreen from '@/screens/ProfileScreen';
-import QuickActionsScreen from '@/screens/QuickActionsScreen';
 import { friendlyError, getConfig, getMe, getReferral, getSkills } from '@/lib/api';
 
 export default function App() {
@@ -30,8 +29,9 @@ export default function App() {
 
     (async () => {
       try {
-        // Skills is a public static catalog, so a failure there must not block
-        // the screen — config and me are the load-bearing calls.
+        // Skills is a public static catalog used only to label usage rows on
+        // Profile, so a failure there must not block the screen — config and me
+        // are the load-bearing calls.
         const [configData, meData, skillsData] = await Promise.all([
           getConfig(),
           getMe(),
@@ -96,10 +96,7 @@ export default function App() {
   return (
     <div className="min-h-full">
       <main className="mx-auto max-w-md px-4 pb-24 pt-4">
-        {tab === 'home' && (
-          <HomeScreen me={me} config={config} skills={skills} referral={referral} />
-        )}
-        {tab === 'actions' && <QuickActionsScreen me={me} config={config} skills={skills} />}
+        {tab === 'home' && <HomeScreen me={me} config={config} referral={referral} />}
         {tab === 'profile' && (
           <ProfileScreen me={me} config={config} skills={skills} onRefresh={refreshMe} />
         )}

@@ -13,9 +13,7 @@ import {
   mountMiniAppSync,
   mountThemeParamsSync,
   retrieveRawInitData,
-  closeMiniApp,
   openLink as sdkOpenLink,
-  openTelegramLink as sdkOpenTelegramLink,
 } from '@telegram-apps/sdk-react';
 
 let rawInitData = null;
@@ -86,32 +84,4 @@ export function openExternalLink(url) {
     // fall through to the plain-browser path
   }
   window.open(url, '_blank', 'noopener,noreferrer');
-}
-
-// Opens a t.me link inside the Telegram client itself, then closes the Mini
-// App. `close()` is called right after because on several clients
-// `openTelegramLink` alone does not dismiss the WebView, which would leave the
-// student staring at the Mini App instead of the pre-filled compose box.
-export function openTelegramChat(url) {
-  if (!url) return;
-  let opened = false;
-  try {
-    if (sdkOpenTelegramLink.isAvailable()) {
-      sdkOpenTelegramLink(url);
-      opened = true;
-    }
-  } catch {
-    opened = false;
-  }
-
-  if (!opened) {
-    window.open(url, '_blank', 'noopener,noreferrer');
-    return;
-  }
-
-  try {
-    if (closeMiniApp.isAvailable()) closeMiniApp();
-  } catch {
-    // Nothing else to do — the chat is already open on top of the Mini App.
-  }
 }

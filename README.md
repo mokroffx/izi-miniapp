@@ -10,16 +10,17 @@ This is **not** the web dashboard. The dashboard is a standalone Vite SPA at
 
 ## What it does
 
-Three tabs (shown only once the Telegram account is linked to an ИзиЧат
-account): `Главная`, `Быстрые действия`, `Профиль`. An unlinked account sees a
-single welcome screen with login/signup links and no navigation.
+Two tabs (shown only once the Telegram account is linked to an ИзиЧат
+account): `Главная` and `Профиль`. An unlinked account sees a single welcome
+screen with login/signup links and no navigation.
 
-Quick actions never call the backend to "start" anything. Tapping one opens
-`https://t.me/<bot>?text=<template>` via the SDK's `openTelegramLink()` and then
-closes the Mini App. The message is **pre-filled but unsent** — the student
-presses Send, so the request enters the bot through the exact same
-`before_agent_run` → classifier → credit-reservation pipeline as a hand-typed
-message. There is deliberately no alternative "launch skill" API.
+`Главная` shows the subscription prompt (free trial only) and the referral
+block. `Профиль` shows the balance, recent tasks and the cancel button.
+
+The Mini App never calls the backend to "start" any task — it is a read-only
+surface over the account plus the cancel action. All actual work still enters
+the bot as an ordinary Telegram message, through the same
+`before_agent_run` → classifier → credit-reservation pipeline.
 
 ## Backend
 
@@ -31,7 +32,7 @@ every request. There is no cookie and no session.
 |---|---|---|
 | `GET /api/miniapp/config` | no | bootstrap (appUrl, paymentUrl, botUsername) |
 | `GET /api/miniapp/me` | yes | bootstrap, profile, post-cancel refresh |
-| `GET /api/miniapp/skills` | no | quick-action catalog |
+| `GET /api/miniapp/skills` | no | skill id → label for Profile usage rows |
 | `GET /api/miniapp/referral` | yes | Home referral block |
 | `GET /api/miniapp/usage` | yes | Profile "Последние задачи" |
 | `POST /api/miniapp/subscription/cancel` | yes | Profile cancel button |
