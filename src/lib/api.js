@@ -49,24 +49,10 @@ export function getReferral() {
   return request('/api/miniapp/referral', { errorCode: 'referral_failed' });
 }
 
-// GET /api/miniapp/skills — public static catalog. The backend is the single
-// source of truth for this list; the frontend only renders what it returns.
-export function getSkills() {
-  return request('/api/miniapp/skills', { auth: false, errorCode: 'skills_failed' });
-}
-
-// GET /api/miniapp/usage — 30-day skill breakdown.
-export function getUsage() {
-  return request('/api/miniapp/usage', { errorCode: 'usage_failed' });
-}
-
-// POST /api/miniapp/subscription/cancel — returns the new balance shape.
-export function cancelSubscription() {
-  return request('/api/miniapp/subscription/cancel', {
-    method: 'POST',
-    errorCode: 'cancel_failed',
-  });
-}
+// The backend also serves /skills, /usage and /subscription/cancel. The Mini
+// App is a single page now — skill catalog, usage history and subscription
+// management live in the web dashboard — so no client for them exists here on
+// purpose. Those routes stay available for other consumers.
 
 export function friendlyError(err) {
   if (err?.status === 401 || err?.message === 'no_init_data') {

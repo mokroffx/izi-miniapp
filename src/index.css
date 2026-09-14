@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 /* Dark mode is driven by a `.dark` class on <html>, set from Telegram's own
-   themeParams (see src/telegram/sdk.js). Same variant contract as the web
-   dashboard, so class strings stay interchangeable between the two repos. */
+   themeParams or from the student's manual override (see src/telegram/theme.js).
+   Same variant contract as the web dashboard, so class strings stay
+   interchangeable between the two repos. */
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {

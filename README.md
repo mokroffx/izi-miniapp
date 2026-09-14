@@ -10,17 +10,18 @@ This is **not** the web dashboard. The dashboard is a standalone Vite SPA at
 
 ## What it does
 
-Two tabs (shown only once the Telegram account is linked to an ИзиЧат
-account): `Главная` and `Профиль`. An unlinked account sees a single welcome
-screen with login/signup links and no navigation.
+One page, no navigation. A linked account sees, in order: the greeting, the
+plan + limit bar, the three plan cards (free trial only), the referral block,
+and a link to the web dashboard. An unlinked account sees a single welcome
+screen with login/signup links.
 
-`Главная` shows the subscription prompt (free trial only) and the referral
-block. `Профиль` shows the balance, recent tasks and the cancel button.
+Anything deeper — usage history, subscription management, account settings —
+lives in the web dashboard behind that link, not here.
 
 The Mini App never calls the backend to "start" any task — it is a read-only
-surface over the account plus the cancel action. All actual work still enters
-the bot as an ordinary Telegram message, through the same
-`before_agent_run` → classifier → credit-reservation pipeline.
+surface over the account. All actual work still enters the bot as an ordinary
+Telegram message, through the same `before_agent_run` → classifier →
+credit-reservation pipeline.
 
 ## Backend
 
@@ -31,11 +32,12 @@ every request. There is no cookie and no session.
 | Endpoint | Auth | Used by |
 |---|---|---|
 | `GET /api/miniapp/config` | no | bootstrap (appUrl, paymentUrl, botUsername) |
-| `GET /api/miniapp/me` | yes | bootstrap, profile, post-cancel refresh |
-| `GET /api/miniapp/skills` | no | skill id → label for Profile usage rows |
-| `GET /api/miniapp/referral` | yes | Home referral block |
-| `GET /api/miniapp/usage` | yes | Profile "Последние задачи" |
-| `POST /api/miniapp/subscription/cancel` | yes | Profile cancel button |
+| `GET /api/miniapp/me` | yes | bootstrap: name, plan, limit bar |
+| `GET /api/miniapp/referral` | yes | referral block |
+
+`/api/miniapp/skills`, `/api/miniapp/usage` and
+`POST /api/miniapp/subscription/cancel` still exist on the backend but this
+frontend no longer calls any of them.
 
 The backend origin must be listed in the backend's `CORS_ORIGINS`
 (`https://miniapp.izichat.ru`).

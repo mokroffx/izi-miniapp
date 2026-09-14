@@ -1,46 +1,27 @@
-// App shell: one bootstrap fetch (config + me + skills), then either the
-// not-connected screen or the two-tab layout. Tabs are local state rather
-// than a router — the Mini App has no URLs to speak of and Telegram owns the
-// back gesture.
-import { useCallback, useEffect, useState } from 'react';
-import BottomNav from '@/components/BottomNav';
+// App shell: one bootstrap fetch (config + me), then either the not-connected
+// screen or the single home screen. There is no navigation and no router — the
+// Mini App is one page and Telegram owns the back gesture.
+import { useEffect, useState } from 'react';
 import HomeScreen from '@/screens/HomeScreen';
 import NotConnectedScreen from '@/screens/NotConnectedScreen';
-import ProfileScreen from '@/screens/ProfileScreen';
-import { friendlyError, getConfig, getMe, getReferral, getSkills } from '@/lib/api';
+import { friendlyError, getConfig, getMe, getReferral } from '@/lib/api';
 
 export default function App() {
   const [status, setStatus] = useState('loading'); // loading | ready | error
   const [error, setError] = useState('');
   const [config, setConfig] = useState(null);
   const [me, setMe] = useState(null);
-  const [skills, setSkills] = useState([]);
-  const [tab, setTab] = useState('home');
   const [referral, setReferral] = useState({ status: 'loading', data: null, error: '' });
-
-  const refreshMe = useCallback(async () => {
-    const data = await getMe();
-    setMe(data);
-    return data;
-  }, []);
 
   useEffect(() => {
     let cancelled = false;
 
     (async () => {
       try {
-        // Skills is a public static catalog used only to label usage rows on
-        // Profile, so a failure there must not block the screen — config and me
-        // are the load-bearing calls.
-        const [configData, meData, skillsData] = await Promise.all([
-          getConfig(),
-          getMe(),
-          getSkills().catch(() => ({ skills: [] })),
-        ]);
+        const [configData, meData] = await Promise.all([getConfig(), getMe()]);
         if (cancelled) return;
         setConfig(configData);
         setMe(meData);
-        setSkills(skillsData?.skills ?? []);
         setStatus('ready');
       } catch (err) {
         if (cancelled) return;
@@ -95,13 +76,9 @@ export default function App() {
 
   return (
     <div className="min-h-full">
-      <main className="mx-auto max-w-md px-4 pb-24 pt-4">
-        {tab === 'home' && <HomeScreen me={me} config={config} referral={referral} />}
-        {tab === 'profile' && (
-          <ProfileScreen me={me} config={config} skills={skills} onRefresh={refreshMe} />
-        )}
+      <main className="mx-auto max-w-md px-4 pb-10 pt-4">
+        <HomeScreen me={me} config={config} referral={referral} />
       </main>
-      <BottomNav active={tab} onChange={setTab} />
     </div>
   );
 }
