@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+/* Dark mode is driven by a `.dark` class on <html>, set from Telegram's own
+   themeParams (see src/telegram/sdk.js). Same variant contract as the web
+   dashboard, so class strings stay interchangeable between the two repos. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+/* Monochrome design tokens.
+   The dashboard's `--cc-*` tokens carry no hue, so they are reused verbatim
+   (renamed without the prefix). The only additions are `--primary-bg` /
+   `--primary-text`, standing in for the dashboard's violet button fill: this
+   app is strictly black-and-white, so the primary action is white-on-ink in
+   light mode and ink-on-white in dark mode. No accent hue exists anywhere in
+   this stylesheet. */
+:root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f5;
+  --border: rgba(0, 0, 0, 0.08);
+  --text: #131316;
+  --text-secondary: #71717a;
+  --input-bg: #f4f4f5;
+  --hover: rgba(0, 0, 0, 0.04);
+  --primary-bg: #131316;
+  --primary-text: #ffffff;
+}
+
+.dark,
+[data-theme="dark"] {
+  --bg: #0a0a0a;
+  --surface: #141414;
+  --surface-2: #1a1a1a;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #f5f5f5;
+  --text-secondary: #71717a;
+  --input-bg: #141414;
+  --hover: rgba(255, 255, 255, 0.06);
+  --primary-bg: #f5f5f5;
+  --primary-text: #131316;
+}
+
+/* Telegram's WebView is the only real runtime and the class above is applied
+   from its themeParams before first paint. This query is only a fallback for
+   the rare case where themeParams are unavailable and no theme was pinned. */
+@media (prefers-color-scheme: dark) {
+  :root:not(.dark):not([data-theme="light"]):not([data-theme="dark"]) {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --surface-2: #1a1a1a;
+    --border: rgba(255, 255, 255, 0.08);
+    --text: #f5f5f5;
+    --text-secondary: #71717a;
+    --input-bg: #141414;
+    --hover: rgba(255, 255, 255, 0.06);
+    --primary-bg: #f5f5f5;
+    --primary-text: #131316;
+  }
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in-up 0.2s ease-out;
+}
