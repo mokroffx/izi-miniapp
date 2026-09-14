@@ -8,7 +8,6 @@
 
 import {
   init as initSdk,
-  isThemeParamsDark,
   miniAppReady,
   mountMiniAppSync,
   mountThemeParamsSync,
@@ -17,13 +16,11 @@ import {
 } from '@telegram-apps/sdk-react';
 
 let rawInitData = null;
-let insideTelegram = false;
 
 // Called once from main.jsx before the React tree mounts.
 export function initTelegram() {
   try {
     initSdk();
-    insideTelegram = true;
   } catch {
     // Not running inside a Telegram WebView — leave everything unmounted.
     return;
@@ -48,26 +45,10 @@ export function initTelegram() {
   }
 }
 
-export function isInsideTelegram() {
-  return insideTelegram;
-}
-
 // Raw `initData` query string, sent verbatim as `Authorization: tma <initData>`
 // on every authenticated backend call. The backend re-verifies its HMAC.
 export function getRawInitData() {
   return rawInitData;
-}
-
-// Telegram's own dark/light decision, read from themeParams. Exported as the
-// signal itself so components can subscribe to it via `useSignal`.
-export const isDarkSignal = isThemeParamsDark;
-
-export function readIsDark() {
-  try {
-    return Boolean(isThemeParamsDark());
-  } catch {
-    return false;
-  }
 }
 
 // External https link — opens in Telegram's in-app browser and deliberately

@@ -3,22 +3,16 @@
 //
 // Two sources, in priority order:
 //   1. A manual override stored by the header toggle (src/lib/themePreference).
-//      An explicit choice wins and is never overridden by Telegram afterwards.
-//   2. Telegram's themeParams, followed live for the rest of the session.
-//
-// themeParams is preferred over prefers-color-scheme because the Telegram
-// client can run a dark app theme on a light OS (and the reverse), and this app
-// normally only ever renders inside that client.
-import { isDarkSignal, isInsideTelegram, readIsDark } from '@/telegram/sdk';
+//      An explicit choice wins for good — nothing overrides it afterwards.
+//   2. No stored choice yet: dark, unconditionally. This is a first-run
+//      default only, independent of Telegram's own theme — a student who has
+//      never touched the header toggle always opens into dark mode.
 import { getStoredThemePreference, setStoredThemePreference } from '@/lib/themePreference';
 
-// Non-null only while we are following Telegram's live theme signal.
-let unsubscribeTelegramTheme = null;
-
 // Components that need to stay in sync with the applied theme (currently just
-// the header toggle's icon) subscribe here. This fires on EVERY setDark() call
-// — a manual tap, the initial load, or a live Telegram theme_changed event —
-// so nothing can go stale by only listening to the tap handler.
+// the header toggle's icon) subscribe here. This fires on every setDark()
+// call — the initial load or a manual tap — so nothing can go stale by only
+// listening to the tap handler.
 const listeners = new Set();
 
 function setDark(dark) {
@@ -31,29 +25,14 @@ function setDark(dark) {
   listeners.forEach((fn) => fn(value));
 }
 
-// Subscribe to every applied-theme change (not just manual ones). Returns an
-// unsubscribe function.
+// Subscribe to every applied-theme change. Returns an unsubscribe function.
 export function subscribeToAppliedTheme(fn) {
   listeners.add(fn);
   return () => listeners.delete(fn);
 }
 
-function stopFollowingTelegram() {
-  if (typeof unsubscribeTelegramTheme !== 'function') {
-    unsubscribeTelegramTheme = null;
-    return;
-  }
-  try {
-    unsubscribeTelegramTheme();
-  } catch {
-    // Already detached — nothing to do.
-  }
-  unsubscribeTelegramTheme = null;
-}
-
 // The theme actually applied to the document right now, which is what the
-// toggle's icon must reflect (a manual override may already have changed it
-// away from Telegram's raw signal).
+// toggle's icon must reflect.
 export function isDarkApplied() {
   const root = document.documentElement;
   const pinned = root.getAttribute('data-theme');
@@ -68,33 +47,15 @@ export function isDarkApplied() {
   }
 }
 
-export function applyTelegramTheme() {
+// Called once from main.jsx before the React tree mounts.
+export function applyInitialTheme() {
   const stored = getStoredThemePreference();
-  if (stored) {
-    // Explicit student choice — apply it and never subscribe, so a later
-    // `theme_changed` from Telegram cannot silently override it.
-    setDark(stored === 'dark');
-    return;
-  }
-
-  if (!isInsideTelegram()) return;
-
-  setDark(readIsDark());
-
-  // themeParams emits on `theme_changed`, so the signal keeps the class in sync
-  // if the student switches theme while the Mini App is open.
-  try {
-    unsubscribeTelegramTheme = isDarkSignal.sub((dark) => setDark(dark));
-  } catch {
-    // Signal unavailable outside Telegram — the initial value above is enough.
-    unsubscribeTelegramTheme = null;
-  }
+  setDark(stored ? stored === 'dark' : true);
 }
 
 // Called by the header toggle. Pins the choice for this session and future
-// loads, and detaches from Telegram's live signal if we were still following it.
+// loads.
 export function setManualTheme(dark) {
-  stopFollowingTelegram();
   setDark(dark);
   setStoredThemePreference(dark ? 'dark' : 'light');
 }
