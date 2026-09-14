@@ -4,14 +4,13 @@ import Card from '@/components/Card';
 import ReferralBlock from '@/components/ReferralBlock';
 import SkillCard from '@/components/SkillCard';
 import UpgradeCard from '@/components/UpgradeCard';
-import { launchSkill } from '@/lib/skillLink';
-
-// Featured on Home, in this order. Filtered out of the same catalog the Quick
-// Actions tab renders — never a second hardcoded copy of the skills.
-const FEATURED_IDS = ['writer', 'exam_prep', 'browser'];
+import { isSkillLocked, launchSkill } from '@/lib/skillLink';
 
 export default function HomeScreen({ me, config, skills, referral }) {
-  const featured = FEATURED_IDS.map((id) => skills.find((s) => s.id === id)).filter(Boolean);
+  // `featured` comes from GET /api/miniapp/skills (MINIAPP_FEATURED_SKILL_IDS
+  // on the backend) — never a second hardcoded id list here, so a catalog
+  // change can't leave Home stale.
+  const featured = skills.filter((s) => s.featured);
 
   return (
     <div className="space-y-4">
@@ -48,7 +47,7 @@ export default function HomeScreen({ me, config, skills, referral }) {
             <SkillCard
               key={skill.id}
               skill={skill}
-              locked={me.isFreeTrial && skill.paidOnly}
+              locked={isSkillLocked(me, skill)}
               onTap={() => launchSkill(config.botUsername, skill)}
             />
           ))}

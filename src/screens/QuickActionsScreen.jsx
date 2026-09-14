@@ -4,7 +4,7 @@
 // server-side when the student actually sends the message, so blocking the tap
 // here would only hide what the product can do.
 import SkillCard from '@/components/SkillCard';
-import { launchSkill } from '@/lib/skillLink';
+import { isSkillLocked, launchSkill } from '@/lib/skillLink';
 
 export default function QuickActionsScreen({ me, config, skills }) {
   return (
@@ -22,7 +22,7 @@ export default function QuickActionsScreen({ me, config, skills }) {
           <SkillCard
             key={skill.id}
             skill={skill}
-            locked={me.isFreeTrial && skill.paidOnly}
+            locked={isSkillLocked(me, skill)}
             onTap={() => launchSkill(config.botUsername, skill)}
           />
         ))}

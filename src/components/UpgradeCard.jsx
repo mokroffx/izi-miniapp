@@ -4,10 +4,9 @@
 // `paymentUrl` is an ordinary external https link opened with the SDK's
 // openLink() — it deliberately does NOT close the Mini App, so the student can
 // come back to it after paying.
-import Button from '@/components/Button';
 import Card from '@/components/Card';
 import BalanceGauge from '@/components/BalanceGauge';
-import { openExternalLink } from '@/telegram/sdk';
+import ExternalLinkButton from '@/components/ExternalLinkButton';
 
 export default function UpgradeCard({ message, percent, paymentUrl }) {
   return (
@@ -21,17 +20,9 @@ export default function UpgradeCard({ message, percent, paymentUrl }) {
         <BalanceGauge percent={percent} />
       </div>
 
-      <Button
-        as="a"
-        href={paymentUrl || '#'}
-        onClick={(e) => {
-          e.preventDefault();
-          openExternalLink(paymentUrl);
-        }}
-        className="mt-4 w-full px-5 py-3 text-sm"
-      >
+      <ExternalLinkButton href={paymentUrl} className="mt-4 w-full px-5 py-3 text-sm">
         Оформить подписку
-      </Button>
+      </ExternalLinkButton>
     </Card>
   );
 }

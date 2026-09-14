@@ -20,3 +20,9 @@ export function launchSkill(botUsername, skill) {
   if (!url) return;
   openTelegramChat(url);
 }
+
+// Shared by HomeScreen and QuickActionsScreen so a future rule change can't
+// be applied to one screen and missed on the other.
+export function isSkillLocked(me, skill) {
+  return Boolean(me?.isFreeTrial && skill?.paidOnly);
+}

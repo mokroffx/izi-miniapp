@@ -1,9 +1,8 @@
 // Shown when GET /api/miniapp/me answers { connected: false }.
 // No navigation, no tabs, nothing else — the only thing to do here is link the
 // Telegram account to an ИзиЧат account in the web dashboard.
-import Button from '@/components/Button';
 import Card from '@/components/Card';
-import { openExternalLink } from '@/telegram/sdk';
+import ExternalLinkButton from '@/components/ExternalLinkButton';
 
 export default function NotConnectedScreen({ appUrl }) {
   const loginUrl = appUrl ? `${appUrl}/login` : null;
@@ -19,29 +18,16 @@ export default function NotConnectedScreen({ appUrl }) {
         </p>
 
         <div className="mt-6 space-y-3">
-          <Button
-            as="a"
-            href={loginUrl || '#'}
-            onClick={(e) => {
-              e.preventDefault();
-              openExternalLink(loginUrl);
-            }}
-            className="w-full px-5 py-3 text-sm"
-          >
+          <ExternalLinkButton href={loginUrl} className="w-full px-5 py-3 text-sm">
             Войти
-          </Button>
-          <Button
-            as="a"
+          </ExternalLinkButton>
+          <ExternalLinkButton
             variant="secondary"
-            href={signupUrl || '#'}
-            onClick={(e) => {
-              e.preventDefault();
-              openExternalLink(signupUrl);
-            }}
+            href={signupUrl}
             className="w-full px-5 py-3 text-sm"
           >
             Создать аккаунт
-          </Button>
+          </ExternalLinkButton>
         </div>
       </Card>
     </div>

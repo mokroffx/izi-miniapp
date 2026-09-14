@@ -37,22 +37,16 @@ export function initTelegram() {
     rawInitData = null;
   }
 
-  try {
-    if (mountThemeParamsSync.isAvailable()) mountThemeParamsSync();
-  } catch {
-    // Theme params unavailable — the CSS falls back to prefers-color-scheme.
-  }
-
-  try {
-    if (mountMiniAppSync.isAvailable()) mountMiniAppSync();
-  } catch {
-    // Non-fatal: only affects header/background colour syncing.
-  }
-
-  try {
-    if (miniAppReady.isAvailable()) miniAppReady();
-  } catch {
-    // Non-fatal: Telegram just keeps its own loading placeholder a bit longer.
+  // Each of these is independently non-fatal (theme falls back to
+  // prefers-color-scheme; mini-app mounting only affects header/background
+  // colour syncing; a skipped miniAppReady just keeps Telegram's own loading
+  // placeholder a bit longer) — one guarded call covers all three.
+  for (const fn of [mountThemeParamsSync, mountMiniAppSync, miniAppReady]) {
+    try {
+      if (fn.isAvailable()) fn();
+    } catch {
+      // ignored — see reasoning above
+    }
   }
 }
 

@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import BalanceGauge from '@/components/BalanceGauge';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
+import ExternalLinkButton from '@/components/ExternalLinkButton';
 import UpgradeCard from '@/components/UpgradeCard';
 import { cancelSubscription, friendlyError, getUsage } from '@/lib/api';
-import { openExternalLink } from '@/telegram/sdk';
 
 function formatDate(value) {
   if (!value) return null;
@@ -151,18 +151,13 @@ export default function ProfileScreen({ me, config, skills, onRefresh }) {
             <dd className="truncate font-semibold text-[var(--text)]">{me.university || '—'}</dd>
           </div>
         </dl>
-        <Button
-          as="a"
+        <ExternalLinkButton
           variant="secondary"
-          href={config.appUrl || '#'}
-          onClick={(e) => {
-            e.preventDefault();
-            openExternalLink(config.appUrl);
-          }}
+          href={config.appUrl}
           className="mt-4 w-full px-5 py-3 text-sm"
         >
           Управлять в личном кабинете
-        </Button>
+        </ExternalLinkButton>
       </Card>
 
       {history.length > 0 && (
